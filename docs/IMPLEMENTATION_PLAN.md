@@ -504,6 +504,7 @@ class JobStatus(BaseModel):
 ### `features`
 - `indicators.py`: pure functions `DataFrame -> DataFrame` (no I/O). Unit-testable with fixture parquet.
 - `target.py`: label builders — forward return bins (for RF), regime label windows (no lookahead! see §14).
+- Canonical entry point: `add_indicators(frame: pd.DataFrame) -> pd.DataFrame`; preserve leading rolling-window NaNs and emit `close` plus every `FEATURE_COLUMNS` entry.
 
 ### `regime`
 - `hmm.py`: `fit_hmm(features) -> RegimeResult`; state assignment resolved so labels are stable (state 0 = lowest mean return = bear, 2 = highest = bull by convention — document in code).
@@ -519,6 +520,7 @@ class JobStatus(BaseModel):
 ### `risk`
 - `volatility.py`: EWMA vol (iter-1); GARCH(1,1) forecast (iter-2).
 - `var.py`: historical VaR 95/99, ES, parametric VaR; horizon 1-day.
+- `report.py`: pure `compute_risk_report(symbol, close) -> RiskReport` assembly; API router remains thin.
 - `stress.py` (iter-2): VAE (papers #7) — synthetic stress scenarios, portfolio-level.
 
 ### `recommend`
@@ -672,9 +674,9 @@ Goal: **a working end-to-end demo** (symbol → backtest → regime overlay → 
 - **Integration:** must consume and return `MarketData` (§10.1); never import other modules. Commit under `feat/data/...`.
 
 ### T2 — Features (Durgashree)
-- [ ] `features/indicators.py`: implement every column in §10.2 (`ta` library or manual pandas — no I/O).
-- [ ] `features/target.py`: forward-return bins + regime label windows (no lookahead).
-- [ ] Unit tests against `tests/fixtures` parquet (tiny, checked-in).
+- [x] `features/indicators.py`: implement every column in §10.2 (`ta` library or manual pandas — no I/O).
+- [x] `features/target.py`: forward-return bins + regime label windows (no lookahead).
+- [x] Unit tests against deterministic synthetic fixtures in `tests/fixtures`.
 - **Acceptance:** all columns of §10.2 present; NaN policy documented; tests green.
 - **Integration:** pure functions `FeaturesFrame -> FeaturesFrame`; add new indicators in the same table §10.2 style. Commit under `feat/features/...`.
 
@@ -692,7 +694,7 @@ Goal: **a working end-to-end demo** (symbol → backtest → regime overlay → 
 - **Integration:** define the exact strategy registry keys now (`buy_and_hold`, `ma_crossover`, `rsi`, `momentum`, `mean_reversion`) — frontend and recommend depend on these strings.
 
 ### T5 — Risk (Durgashree)
-- [ ] `risk/volatility.py` EWMA; `risk/var.py` VaR/ES (historical + parametric); `/risk/{symbol}`.
+- [x] `risk/volatility.py` EWMA; `risk/var.py` VaR/ES (historical + parametric); `/risk/{symbol}`.
 - **Acceptance:** RiskReport matches hand-computed EWMA/VaR on fixture data within tolerance.
 - **Integration:** consumes `FeaturesFrame`; returns metrics only — no plots (plots belong to `report`).
 

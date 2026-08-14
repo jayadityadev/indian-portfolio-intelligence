@@ -33,25 +33,29 @@ atr_14, max_drawdown_rolling
 Functions must be **pure** (`DataFrame -> DataFrame`, no I/O) so they are unit
 testable against `tests/fixtures/`.
 
+Canonical entry point: `add_indicators(frame: pd.DataFrame) -> pd.DataFrame`.
+Leading rolling-window NaNs stay unchanged; `app/risk/report.py` assembles
+`RiskReport` while API routing remains thin.
+
 ## Iteration 1 tasks
 
 ### 1. Features (`app/features/indicators.py`)
-- [ ] Implement every `FEATURE_COLUMNS` column. Use the `ta` library (installed)
+- [x] Implement every `FEATURE_COLUMNS` column. Use the `ta` library (installed)
       where convenient, manual pandas otherwise. Document NaN policy (first N rows
       are NaN for lookback indicators — keep them, do not forward-fill arbitrarily).
-- [ ] `target.py`: forward-return bins + regime label windows. **No lookahead** —
+- [x] `target.py`: forward-return bins + regime label windows. **No lookahead** —
       labels at time `t` use data through `t` only (shift the target back).
-- [ ] Unit tests for a few indicators against hand-computed values on a tiny fixture.
-- **Verify:** `uv run pytest tests/unit/test_features_*.py` (your new test file).
+- [x] Unit tests for a few indicators against hand-computed values on a tiny fixture.
+- **Verify:** `uv run pytest tests/unit/test_features.py` (deterministic fixture tests).
 
 ### 2. Risk (`app/risk`)
-- [ ] `volatility.py`: EWMA volatility (iter-1; GARCH(1,1) is iter-2).
-- [ ] `var.py`: historical VaR 95/99, Expected Shortfall, parametric VaR, 1-day horizon.
-- [ ] Wire `/api/v1/risk/{symbol}` → `RiskReport`.
+- [x] `volatility.py`: EWMA volatility (iter-1; GARCH(1,1) is iter-2).
+- [x] `var.py`: historical VaR 95/99, Expected Shortfall, parametric VaR, 1-day horizon.
+- [x] Wire `/api/v1/risk/{symbol}` → `RiskReport`.
 - **Verify:** RiskReport matches hand-computed EWMA/VaR on a fixture within tolerance.
 
 ### 3. Recommendation support (with Jayaditya)
-- [ ] Help define the regime→strategy suitability matrix logic in
+- [x] Help define the regime→strategy suitability matrix logic in
       `app/recommend/scoring.py` (you contribute the finance rationale; Jayaditya
       wires the service).
 

@@ -21,6 +21,7 @@ dependencies = [
     "scikit-learn>=1.4",
     "ta>=0.11.0",
     "statsmodels>=0.14",
+    "scipy>=1.11",
     "plotly>=5.20",
     "httpx>=0.27",
     "python-dotenv>=1.0",
@@ -70,6 +71,8 @@ module = [
     "vectorbt",
     "hmmlearn.*",
     "sklearn.*",
+    "scipy.*",
+    "ta.*",
     "app.features.indicators",
 ]
 ignore_missing_imports = true
