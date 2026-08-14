@@ -50,13 +50,15 @@ def test_backtest_result_shape() -> None:
         end=date(2025, 1, 1),
         metrics=m,
         equity_curve=[EquityPoint(date=date(2020, 1, 1), equity=100.0, benchmark=100.0)],
-        trade_list=[Trade(
-            entry_date=date(2020, 1, 1),
-            exit_date=date(2020, 2, 1),
-            direction="long",
-            pnl_pct=5.0,
-            bars_held=20,
-        )],
+        trade_list=[
+            Trade(
+                entry_date=date(2020, 1, 1),
+                exit_date=date(2020, 2, 1),
+                direction="long",
+                pnl_pct=5.0,
+                bars_held=20,
+            )
+        ],
     )
     assert b.net_of_costs is True
     assert b.metrics.sharpe == 1.0

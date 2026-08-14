@@ -150,9 +150,7 @@ class RegimePoint(BaseModel):
 # Backtest
 # ---------------------------------------------------------------------------
 
-StrategyName = Literal[
-    "buy_and_hold", "ma_crossover", "rsi", "momentum", "mean_reversion"
-]
+StrategyName = Literal["buy_and_hold", "ma_crossover", "rsi", "momentum", "mean_reversion"]
 
 
 class PerformanceMetrics(BaseModel):
@@ -282,6 +280,5 @@ class PricePrediction(BaseModel):
     symbol: str
     next_close: float
     caveat: str = (
-        "Research/diagnostic only. Prediction alone is insufficient — "
-        "see the evaluation layer."
+        "Research/diagnostic only. Prediction alone is insufficient — see the evaluation layer."
     )
