@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "skills": {
+    "alphaear-news": {
+      "source": "RKiding/Awesome-finance-skills",
+      "sourceType": "github",
+      "skillPath": "skills/alphaear-news/SKILL.md",
+      "computedHash": "2bd01a4f262942841d0d88a03102debff14188af2d849ee8f8684ddc63013089"
+    },
+    "backtest": {
+      "source": "marketcalls/vectorbt-backtesting-skills",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/backtest/SKILL.md",
+      "computedHash": "13f76c5ab7968c459b1714aef058f69a4271d8067e580f7902f356c2db8f5ccf"
+    },
+    "optimize": {
+      "source": "marketcalls/vectorbt-backtesting-skills",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/optimize/SKILL.md",
+      "computedHash": "7d7a381e36a2af4a07f6f4a2892bc66ab9eb157686eabad6a247fe52c98fb8f4"
+    },
+    "quick-stats": {
+      "source": "marketcalls/vectorbt-backtesting-skills",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/quick-stats/SKILL.md",
+      "computedHash": "87750b23b07530c719e7276470596222d8c902387e508f925921ae8752a33655"
+    },
+    "strategy-compare": {
+      "source": "marketcalls/vectorbt-backtesting-skills",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/strategy-compare/SKILL.md",
+      "computedHash": "e7cdea7e217eca5b330d237cccd79eab9e1a14c2f561dea03c056444d2b6829b"
+    }
+  }
+}
