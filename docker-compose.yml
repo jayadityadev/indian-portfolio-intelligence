@@ -1,0 +1,64 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    env_file: .env
+    environment:
+      - POSTGRES_DSN=postgresql://ipu:ipu@postgres:5432/ipu
+      - REDIS_URL=redis://redis:6379/0
+      - PARQUET_DIR=/data/parquet
+    ports:
+      - "8000:8000"
+    volumes:
+      - parquet:/data/parquet
+    depends_on:
+      - postgres
+      - redis
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/worker.Dockerfile
+    env_file: .env
+    environment:
+      - POSTGRES_DSN=postgresql://ipu:ipu@postgres:5432/ipu
+      - REDIS_URL=redis://redis:6379/0
+      - PARQUET_DIR=/data/parquet
+    volumes:
+      - parquet:/data/parquet
+    depends_on:
+      - postgres
+      - redis
+
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+    env_file: .env
+    environment:
+      - API_URL=http://api:8000
+    ports:
+      - "8501:8501"
+    depends_on:
+      - api
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=ipu
+      - POSTGRES_PASSWORD=ipu
+      - POSTGRES_DB=ipu
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  parquet:
+  pgdata:
