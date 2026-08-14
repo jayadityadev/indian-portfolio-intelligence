@@ -62,6 +62,18 @@ warn_unused_ignores = true
 module = ["celery.*"]
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+module = [
+    "pandas",
+    "yfinance",
+    "nsepython",
+    "vectorbt",
+    "hmmlearn.*",
+    "sklearn.*",
+    "app.features.indicators",
+]
+ignore_missing_imports = true
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"

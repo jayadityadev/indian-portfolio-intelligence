@@ -28,30 +28,30 @@ is yours. You also review every PR and enforce the git/CI rules.
 ## Iteration 1 tasks (order matters)
 
 ### 1. Finish `app/data` adapters (deliver FIRST — unblocks Chirag)
-- [ ] `sources.py`: `fetch(symbol, start, end, source)` — yfinance primary, nsepython fallback, `auto_adjust=True`. Verify `.NS`/`^NSEI` work and split-adjustment is correct.
-- [ ] `cache.py`: `load`/`store`/`latest_date`/`manifest_is_valid` + parquet manifest.
-- [ ] `adjust.py`: `validate_adjustment` raw-vs-adjusted check.
-- [ ] `universe.py`: NIFTY-50 symbols + `^NSEI`.
+- [x] `sources.py`: `fetch(symbol, start, end, source)` — yfinance primary, nsepython fallback, `auto_adjust=True`, returning `MarketDataFrame`. Verify `.NS`/`^NSEI` work and split-adjustment is correct.
+- [x] `cache.py`: `load`/`store`/`latest_date`/`manifest_is_valid` + parquet manifest.
+- [x] `adjust.py`: `validate_adjustment` raw-vs-adjusted check.
+- [x] `universe.py`: NIFTY-50 symbols + `^NSEI`.
 - **Verify:** `uv run pytest` + a manual 3-symbol backfill writes valid parquet.
 
 ### 2. Regime detection (`app/regime`)
-- [ ] `hmm.py`: Gaussian HMM 3-state; stable label convention (bear/sideways/bull by mean return).
-- [ ] `baselines.py` (k-means, Wasserstein k-means) + `validate.py` (Davies-Bouldin, Dunn, MMD).
-- [ ] Wire `/api/v1/regime/{symbol}/timeline`.
+- [x] `hmm.py`: Gaussian HMM 3-state; stable label convention (bear/sideways/bull by mean return).
+- [x] `baselines.py` (k-means, Wasserstein k-means) + `validate.py` (Davies-Bouldin, Dunn, MMD).
+- [x] Wire `/api/v1/regime/{symbol}/timeline`.
 - **Consumes:** `FEATURE_COLUMNS` from Durgashree — reconfirm names at kickoff.
 
 ### 3. Backtest engine + metrics (`app/backtest`)
-- [ ] `strategies.py`: the 5 strategies (registry keys: `buy_and_hold`, `ma_crossover`, `rsi`, `momentum`, `mean_reversion`).
-- [ ] `engine.py`: vectorbt wrapper → `BacktestResult`; backtrader fallback.
-- [ ] `metrics.py`: **single implementation** of every `PerformanceMetrics` field (§13 of plan). Reject duplicate metric math in review.
-- [ ] `costs.py`: Indian brokerage/STT/stamp/slippage; net-of-costs default.
-- [ ] Wire `/api/v1/backtest` + job poll/result endpoints.
+- [x] `strategies.py`: the 5 strategies (registry keys: `buy_and_hold`, `ma_crossover`, `rsi`, `momentum`, `mean_reversion`).
+- [x] `engine.py`: vectorbt wrapper → `BacktestResult`; backtrader fallback.
+- [x] `metrics.py`: **single implementation** of every `PerformanceMetrics` field (§13 of plan). Reject duplicate metric math in review.
+- [x] `costs.py`: Indian brokerage/STT/stamp/slippage; net-of-costs default.
+- [x] Wire `/api/v1/backtest` + job poll/result endpoints.
 - **Verify:** hand-check metrics on a tiny fixture; write a unit test with known answers.
 
 ### 4. Recommendation v1 (`app/recommend`, pair with Durgashree)
-- [ ] `scoring.py` regime→strategy suitability matrix (rule-based v1).
-- [ ] `service.py` → `Recommendation` (always includes the "not investment advice" caveat).
-- [ ] Wire `/api/v1/recommend/{symbol}`.
+- [x] `scoring.py` regime→strategy suitability matrix (rule-based v1).
+- [x] `service.py` → `Recommendation` (always includes the "not investment advice" caveat).
+- [x] Wire `/api/v1/recommend/{symbol}`.
 
 ## Iteration 2 tasks (schedule validation FIRST — it is the differentiator)
 - [ ] `validation/`: walk-forward + CPCV (purge+embargo) + PBO + Deflated Sharpe; wire `TrustReport` into results.

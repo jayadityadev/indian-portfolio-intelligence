@@ -414,12 +414,12 @@ class MarketData(BaseModel):
     source: Literal["yfinance", "nsepython", "twelvedata"]
     adjusted: bool                      # True = split/dividend adjusted
     freq: Literal["1d"]
-    index: pd.DatetimeIndex             # tz-aware, exchange timezone (Asia/Kolkata), name "date"
-    open, high, low, close, volume: pd.Series  # float64, NaN-tolerant
-    # to_frame() returns DataFrame indexed by date with columns:
-    #   ["open", "high", "low", "close", "volume"]
+    fetched_at: datetime
 ```
-> Internal convention: time series flows as **pandas objects wrapped in small dataclasses**, but *every API/JSON boundary* converts to plain records (see 10.6). Tests use the pandas shapes.
+Internal services use `MarketDataFrame` dataclass, wrapping this metadata with
+`frame: pd.DataFrame` indexed by a tz-aware `DatetimeIndex` (Asia/Kolkata, name
+`date`) and columns `["open", "high", "low", "close", "volume"]` (`float64`,
+NaN-tolerant). `MarketDataFrame.to_records()` converts rows at JSON boundaries.
 
 ### 10.2 FeaturesFrame
 `pd.DataFrame` indexed by date, containing `close` plus at least:
@@ -498,8 +498,8 @@ class JobStatus(BaseModel):
 ## 11. Module Design Notes (per package)
 
 ### `data`
-- Adapters implement one interface: `fetch(symbol, start, end) -> MarketData`. Source chosen by config + availability. Add nsepython/twelvedata behind the same interface — no other module knows the source.
-- `cache.py` implements `load(symbol) -> MarketData` and `store(md)` with manifest handling.
+- Adapters implement one interface: `fetch(symbol, start, end) -> MarketDataFrame`. Source chosen by config + availability. Add nsepython/twelvedata behind the same interface — no other module knows the source.
+- `cache.py` implements `load(symbol) -> MarketDataFrame` and `store(md)` with manifest handling.
 
 ### `features`
 - `indicators.py`: pure functions `DataFrame -> DataFrame` (no I/O). Unit-testable with fixture parquet.
@@ -659,8 +659,8 @@ Goal: **a working end-to-end demo** (symbol → backtest → regime overlay → 
 > Effort split (internal, do not write into report): the architecture/ML-critical modules are owned by one lead so integration stays coherent.
 
 ### Iter-1 SPIKE (Jayaditya, first 3 days)
-- [ ] Scaffold repo skeleton, pyproject, docker-compose, Makefile, CI (see §6–§8). Tag `v0.1.0`.
-- [ ] Implement `schemas.py` (all of §10) + a `tests/unit/test_schemas.py`.
+- [x] Scaffold repo skeleton, pyproject, docker-compose, Makefile, CI (see §6–§8). Tag `v0.1.0`.
+- [x] Implement `schemas.py` (all of §10) + a `tests/unit/test_schemas.py`.
 - [ ] Prove yfinance `.NS` backfill works for `^NSEI` + 5 symbols; validate `auto_adjust` split handling (`data/adjust.py`). Tag `v0.2.0`.
 - **Done when:** `make dev` boots all 5 containers; `/health` returns `{ok:true}`; parquet cache for 5 symbols exists with manifest.
 
@@ -679,15 +679,15 @@ Goal: **a working end-to-end demo** (symbol → backtest → regime overlay → 
 - **Integration:** pure functions `FeaturesFrame -> FeaturesFrame`; add new indicators in the same table §10.2 style. Commit under `feat/features/...`.
 
 ### T3 — Regime detection (Jayaditya)
-- [ ] `regime/hmm.py` Gaussian HMM (3 states) + stable label convention (bear/bull/sideways by mean return).
-- [ ] `regime/baselines.py` k-means + Wasserstein k-means; `regime/validate.py` (DB, Dunn, MMD).
-- [ ] Expose via `/regime/{symbol}/timeline`.
+- [x] `regime/hmm.py` Gaussian HMM (3 states) + stable label convention (bear/bull/sideways by mean return).
+- [x] `regime/baselines.py` k-means + Wasserstein k-means; `regime/validate.py` (DB, Dunn, MMD).
+- [x] Expose via `/regime/{symbol}/timeline`.
 - **Acceptance:** `RegimeResult` correct; comparison table HMM vs baselines non-trivial; tests green. Tag `v0.3.0` (with T2).
 - **Integration:** consumes `FeaturesFrame`, returns `RegimeResult`. Durgashree's features must be column-compatible — coordinate once at kickoff.
 
 ### T4 — Backtest engine + metrics (Jayaditya)
-- [ ] `backtest/strategies.py` (5 strategies, §12), `engine.py` (vectorbt, backtrader fallback), `metrics.py` (§13), `costs.py` (net-of-costs default).
-- [ ] `/backtest` POST + job poll + result endpoints.
+- [x] `backtest/strategies.py` (5 strategies, §12), `engine.py` (vectorbt, backtrader fallback), `metrics.py` (§13), `costs.py` (net-of-costs default).
+- [x] `/backtest` POST + job poll + result endpoints.
 - **Acceptance:** each strategy returns `BacktestResult` with full metrics; net-vs-gross both computed; unit tests on known tiny fixture produce hand-checked numbers.
 - **Integration:** define the exact strategy registry keys now (`buy_and_hold`, `ma_crossover`, `rsi`, `momentum`, `mean_reversion`) — frontend and recommend depend on these strings.
 
@@ -697,8 +697,8 @@ Goal: **a working end-to-end demo** (symbol → backtest → regime overlay → 
 - **Integration:** consumes `FeaturesFrame`; returns metrics only — no plots (plots belong to `report`).
 
 ### T6 — Recommendation v1 (Jayaditya + Durgashree)
-- [ ] `recommend/scoring.py` rule-based regime→strategy suitability matrix (literature + our backtest evidence), `service.py` assembles `Recommendation` with caveat.
-- [ ] `/recommend/{symbol}`.
+- [x] `recommend/scoring.py` rule-based regime→strategy suitability matrix (literature + our backtest evidence), `service.py` assembles `Recommendation` with caveat.
+- [x] `/recommend/{symbol}`.
 - **Acceptance:** recommendation changes with regime; rationale is educational; always includes "not investment advice" caveat.
 
 ### T7 — Report/charts (Aryaman)

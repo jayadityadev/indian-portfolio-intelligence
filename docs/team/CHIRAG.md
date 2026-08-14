@@ -25,13 +25,13 @@ quality gate.
 
 ## The interface you build on (already stubbed — code against it today)
 ```python
-from app.data.sources import fetch            # fetch(symbol, start, end, source=None) -> MarketData
+from app.data.sources import fetch            # fetch(symbol, start, end, source=None) -> MarketDataFrame
 from app.data.cache import (                  # load / store / latest_date / manifest_is_valid
     load, store, latest_date, manifest_is_valid,
 )
 from app.data.universe import nifty50_symbols, nifty50_index
 from app.data.adjust import validate_adjustment
-from app.schemas import MarketData, SymbolInfo
+from app.schemas import MarketDataFrame, SymbolInfo
 ```
 These signatures are frozen. If you need a change, open a `[contracts]` PR — don't
 reimplement data fetching inside `scripts/`.

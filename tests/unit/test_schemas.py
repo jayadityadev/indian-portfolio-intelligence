@@ -1,8 +1,11 @@
 from datetime import date, datetime
 
+import pandas as pd
+
 from app.schemas import (
     BacktestResult,
     EquityPoint,
+    MarketDataFrame,
     PerformanceMetrics,
     RegimeResult,
     Trade,
@@ -62,3 +65,20 @@ def test_backtest_result_shape() -> None:
     )
     assert b.net_of_costs is True
     assert b.metrics.sharpe == 1.0
+
+
+def test_market_data_frame_round_trips_records() -> None:
+    index = pd.date_range("2025-01-01", periods=2, tz="Asia/Kolkata", name="date")
+    frame = pd.DataFrame(
+        {
+            "open": [100.0, 101.0],
+            "high": [102.0, 103.0],
+            "low": [99.0, 100.0],
+            "close": [101.0, 102.0],
+            "volume": [1000.0, 1100.0],
+        },
+        index=index,
+    )
+    market = MarketDataFrame("TEST.NS", "yfinance", True, frame)
+    assert market.metadata.adjusted is True
+    assert market.to_records()[0]["date"] == "2025-01-01"

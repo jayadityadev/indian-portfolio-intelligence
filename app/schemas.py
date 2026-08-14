@@ -14,9 +14,11 @@ See docs/IMPLEMENTATION_PLAN.md §10 for the narrative version.
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from datetime import date, datetime
-from typing import Literal
+from typing import Literal, cast
 
+import pandas as pd
 from pydantic import BaseModel, Field
 
 # ---------------------------------------------------------------------------
@@ -64,6 +66,49 @@ class MarketData(BaseModel):
     adjusted: bool
     freq: Freq = "1d"
     fetched_at: datetime
+
+
+@dataclass
+class MarketDataFrame:
+    """Internal market-data value carrying metadata and pandas OHLCV data.
+
+    Pydantic ``MarketData`` remains the JSON metadata contract. This wrapper keeps
+    DataFrame operations out of API schemas while preserving the §10.1 shape.
+    """
+
+    symbol: str
+    source: SourceName
+    adjusted: bool
+    frame: pd.DataFrame
+    freq: Freq = "1d"
+    fetched_at: datetime | None = None
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.frame.index, pd.DatetimeIndex):
+            raise TypeError("market data frame must use DatetimeIndex")
+        if self.frame.index.name != "date":
+            self.frame.index = self.frame.index.rename("date")
+        missing = [column for column in OHLCV_COLUMNS if column not in self.frame.columns]
+        if missing:
+            raise ValueError(f"market data missing columns: {missing}")
+        self.frame = self.frame.loc[:, OHLCV_COLUMNS].astype(float)
+
+    @property
+    def metadata(self) -> MarketData:
+        return MarketData(
+            symbol=self.symbol,
+            source=self.source,
+            adjusted=self.adjusted,
+            freq=self.freq,
+            fetched_at=self.fetched_at or datetime.now(),
+        )
+
+    def to_records(self) -> list[dict[str, object]]:
+        """Serialize OHLCV rows using ISO dates and JSON-safe nulls."""
+        frame = self.frame.reset_index()
+        frame["date"] = pd.to_datetime(frame["date"]).dt.date.astype(str)
+        frame = frame.where(frame.notna(), None)
+        return cast(list[dict[str, object]], frame.to_dict(orient="records"))
 
 
 class OhlcvRecord(BaseModel):
