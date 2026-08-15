@@ -667,7 +667,7 @@ Goal: **a working end-to-end demo** (symbol → backtest → regime overlay → 
 ### Iter-1 SPIKE (Jayaditya, first 3 days)
 - [x] Scaffold repo skeleton, pyproject, docker-compose, Makefile, CI (see §6–§8). Tag `v0.1.0`.
 - [x] Implement `schemas.py` (all of §10) + a `tests/unit/test_schemas.py`.
-- [ ] Prove yfinance `.NS` backfill works for `^NSEI` + 5 symbols; validate `auto_adjust` split handling (`data/adjust.py`). Tag `v0.2.0`.
+- [x] Prove yfinance `.NS` backfill works for `^NSEI` + 5 symbols; validate `auto_adjust` split handling (`data/adjust.py`). Tag `v0.2.0`. **Superseded by T1** — full universe seed + `validate_data` demonstrated on 24 symbols (201 adjustment events; all adjusted; one known source gap `BAJAJFINANCE.NS`).
 - **Done when:** `make dev` boots all 5 containers; `/health` returns `{ok:true}`; parquet cache for 5 symbols exists with manifest.
 
 ### T1 — Data layer (Chirag)
