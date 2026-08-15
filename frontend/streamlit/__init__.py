@@ -1,3 +1,1 @@
-import requests
-
-import streamlit as st
+"""Streamlit frontend package for Indian Portfolio Intelligence."""

@@ -5,7 +5,9 @@ from __future__ import annotations
 from fastapi import APIRouter, HTTPException
 
 from app.api.deps import load_market_frame
-from app.data.universe import nifty50_symbols
+from app.data import cache
+from app.data.metadata import symbol_info
+from app.data.universe import nifty50_index, nifty50_symbols
 from app.schemas import STRATEGY_NAMES
 
 router = APIRouter()
@@ -13,16 +15,18 @@ router = APIRouter()
 
 @router.get("/symbols")
 def symbols() -> dict[str, object]:
+    universe = nifty50_symbols() + [nifty50_index()]
     return {
         "ok": True,
         "data": [
             {
-                "symbol": symbol,
-                "name": symbol.removesuffix(".NS"),
-                "sector": None,
-                "index_member": True,
+                "symbol": info.symbol,
+                "name": info.name,
+                "sector": info.sector,
+                "index_member": info.index_member,
+                "cached": cache.latest_date(info.symbol) is not None,
             }
-            for symbol in nifty50_symbols()
+            for info in (symbol_info(symbol) for symbol in universe)
         ],
     }
 
