@@ -5,6 +5,16 @@ regime-aware recommendation.
 
 ## 1. Start Stack
 
+Fast local path:
+
+```bash
+./dev_start.sh
+```
+
+This starts only Postgres and Redis in Docker. API, Celery, seed, and Streamlit
+run locally. Use `FULL_SEED=1 ./dev_start.sh` when demonstrating full NIFTY-50
+history.
+
 From fresh checkout:
 
 ```bash

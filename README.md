@@ -41,6 +41,16 @@ make worker      # Celery worker, separate terminal
 make frontend    # Streamlit at http://localhost:8501
 ```
 
+Or launch complete Iteration-1 demo with one command:
+
+```bash
+./dev_start.sh
+```
+
+Launcher seeds `^NSEI` and `RELIANCE.NS` for two years by default. Use
+`FULL_SEED=1 ./dev_start.sh` for full NIFTY-50 history. Press `Ctrl-C` to stop;
+set `STOP_INFRA_ON_EXIT=0` to keep Postgres and Redis running.
+
 ## Modules
 
 | Module | Purpose |
