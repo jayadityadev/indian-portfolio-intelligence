@@ -6,6 +6,7 @@ from fastapi import APIRouter, HTTPException
 
 from app.api.deps import load_market_frame
 from app.data.universe import nifty50_symbols
+from app.schemas import STRATEGY_NAMES
 
 router = APIRouter()
 
@@ -24,6 +25,11 @@ def symbols() -> dict[str, object]:
             for symbol in nifty50_symbols()
         ],
     }
+
+
+@router.get("/strategies")
+def strategies() -> dict[str, object]:
+    return {"ok": True, "data": list(STRATEGY_NAMES)}
 
 
 @router.get("/{symbol}/series")

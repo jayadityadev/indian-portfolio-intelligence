@@ -26,28 +26,32 @@ are arrays of `{"date", "value"}` (or object records). NaN becomes `null`. See
 
 **Do not parse around an awkward endpoint shape** — request a `[contracts]` change.
 
+Plotly figures are served by thin `app/api/report.py` endpoints. Streamlit only
+fetches API JSON and renders it; it does not import chart builders or calculate
+metrics. Strategy keys come from `/api/v1/market/strategies`.
+
 ## Iteration 1 tasks
 
 ### 1. Chart builders (`app/report/charts.py`)
-- [ ] Each returns valid Plotly JSON (use `plotly.graph_objects`, `.to_json()`):
+- [x] Each returns valid Plotly JSON (use `plotly.graph_objects`, `.to_json()`):
   - price + regime-shaded timeline (input: OHLCV records + `RegimeResult`)
   - equity curve vs benchmark (input: `BacktestResult.equity_curve`)
   - drawdown chart
   - per-strategy metric comparison bars (input: `CompareReport`)
   - suitability bars (input: `Recommendation.suitability`)
   - trade scatter
-- [ ] Handle NaN → null, empty states, and long series (downsample to ≤2000 points).
+- [x] Handle NaN → null, empty states, and long series (downsample to ≤2000 points).
 - **Verify:** each builder unit-tests that output JSON parses and has the expected
   trace keys.
 
 ### 2. Streamlit dashboard (`frontend/streamlit/app.py`)
 Pages (sidebar): Market · Backtest · Regime · Risk · Recommend.
-- [ ] Symbol picker + price chart + quick stats.
-- [ ] Backtest: pick symbol/strategy/params → `POST /backtest` → poll job → show
+- [x] Symbol picker + price chart + quick stats.
+- [x] Backtest: pick symbol/strategy/params → `POST /backtest` → poll job → show
       equity + metrics table + drawdown.
-- [ ] Regime: regime timeline shaded on price + current regime + confidence.
-- [ ] Risk: vol, VaR, ES, drawdown panel.
-- [ ] Recommend: current regime → suggested strategy + suitability bars + rationale.
+- [x] Regime: regime timeline shaded on price + current regime + confidence.
+- [x] Risk: vol, VaR, ES, drawdown panel.
+- [x] Recommend: current regime → suggested strategy + suitability bars + rationale.
 - **Verify:** full demo path works against a running stack (`make dev` + `make seed`).
 
 ## Iteration 2 tasks

@@ -41,3 +41,45 @@ def run_backtest(
         features = features.loc[features.index.date <= date.fromisoformat(end)]
     result = run(symbol, strategy, params, features, net_of_costs=net_of_costs)  # type: ignore[arg-type]
     return result.model_dump(mode="json")
+
+
+@celery_app.task(name="backtest.compare", bind=True)
+def compare_backtest(
+    task: object,
+    symbol: str,
+    strategies: list[str],
+    params: dict,
+    start: str | None = None,
+    end: str | None = None,
+    net_of_costs: bool = True,
+) -> dict:
+    """Run selected strategies against one benchmark in one queued job."""
+    from app.api.deps import load_features
+    from app.backtest.engine import run
+    from app.schemas import CompareReport
+
+    features = load_features(symbol)
+    if start:
+        features = features.loc[features.index.date >= date.fromisoformat(start)]
+    if end:
+        features = features.loc[features.index.date <= date.fromisoformat(end)]
+    results = [
+        run(
+            symbol,
+            strategy,  # type: ignore[arg-type]
+            params.get(strategy, {}),
+            features,
+            net_of_costs=net_of_costs,
+        )
+        for strategy in strategies
+    ]
+    if not results:
+        raise ValueError("at least one strategy is required")
+    report = CompareReport(
+        symbol=symbol,
+        start=results[0].start,
+        end=results[0].end,
+        net_of_costs=net_of_costs,
+        results=results,
+    )
+    return report.model_dump(mode="json")

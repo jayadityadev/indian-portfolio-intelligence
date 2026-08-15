@@ -6,7 +6,7 @@ shapes. Long-running work is enqueued to Celery and polled via JobStatus.
 
 from fastapi import FastAPI
 
-from app.api import backtest, jobs, market, recommend, regime, risk
+from app.api import backtest, jobs, market, recommend, regime, report, risk
 from app.config import settings
 from app.schemas import HealthResponse
 
@@ -29,3 +29,4 @@ app.include_router(jobs.router, prefix="/api/v1/jobs", tags=["jobs"])
 app.include_router(regime.router, prefix="/api/v1/regime", tags=["regime"])
 app.include_router(recommend.router, prefix="/api/v1/recommend", tags=["recommend"])
 app.include_router(risk.router, prefix="/api/v1/risk", tags=["risk"])
+app.include_router(report.router, prefix="/api/v1/report", tags=["report"])

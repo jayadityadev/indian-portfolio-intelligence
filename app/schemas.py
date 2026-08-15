@@ -196,6 +196,13 @@ class RegimePoint(BaseModel):
 # ---------------------------------------------------------------------------
 
 StrategyName = Literal["buy_and_hold", "ma_crossover", "rsi", "momentum", "mean_reversion"]
+STRATEGY_NAMES: tuple[StrategyName, ...] = (
+    "buy_and_hold",
+    "ma_crossover",
+    "rsi",
+    "momentum",
+    "mean_reversion",
+)
 
 
 class PerformanceMetrics(BaseModel):
