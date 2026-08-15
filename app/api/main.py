@@ -8,7 +8,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-from app.api import backtest, jobs, market, recommend, regime, report, risk
+from app.api import backtest, jobs, market, recommend, regime, report, risk, validation
 from app.config import settings
 from app.schemas import HealthResponse
 
@@ -55,3 +55,4 @@ app.include_router(regime.router, prefix="/api/v1/regime", tags=["regime"])
 app.include_router(recommend.router, prefix="/api/v1/recommend", tags=["recommend"])
 app.include_router(risk.router, prefix="/api/v1/risk", tags=["risk"])
 app.include_router(report.router, prefix="/api/v1/report", tags=["report"])
+app.include_router(validation.router, prefix="/api/v1/validation", tags=["validation"])

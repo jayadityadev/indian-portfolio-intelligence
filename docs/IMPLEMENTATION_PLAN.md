@@ -729,9 +729,9 @@ Goal: **a working end-to-end demo** (symbol → backtest → regime overlay → 
 Goal: **credibility layer + product polish + cloud deploy.** The differentiator lives here — do not treat it as optional.
 
 ### V1 — Validation layer (Jayaditya) ← the differentiator, schedule FIRST in iter-2
-- [ ] `validation/walk_forward.py`, `cpcv.py` (purge+embargo), `pbo.py`, `dsr.py`, `costs.py` finalized.
-- [ ] Wire `TrustReport` into `BacktestResult` and `/validation/{job_id}`.
-- **Acceptance:** PBO/DSR computed on a config grid; leakage tests (see §14) enforced by test that asserts embargo gap.
+- [x] `validation/walk_forward.py`, `cpcv.py` (purge+embargo), `pbo.py`, `dsr.py`, `costs.py` finalized.
+- [x] Wire `TrustReport` into `BacktestResult` and `/validation/{job_id}`.
+- **Acceptance:** PBO/DSR computed on a config grid; leakage tests (see §14) enforced by test that asserts embargo gap. **Done:** walk-forward+PBO+DSR headline path (ADR D-1/D-2/D-3); full combinatorial CPCV run available but marked `slow`. Embargo leak test in `tests/unit/test_validation.py`.
 
 ### V2 — Regime RF predictor (Jayaditya)
 - [ ] `regime/rf.py` KMRF-style ex-ante regime prediction + feature importances (SHAP/Boruta).

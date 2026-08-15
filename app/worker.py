@@ -33,6 +33,7 @@ def run_backtest(
     """Celery task boundary for long-running backtests."""
     from app.api.deps import load_features
     from app.backtest.engine import run
+    from app.validation.runner import validate_strategy
 
     features = load_features(symbol)
     if start:
@@ -40,6 +41,7 @@ def run_backtest(
     if end:
         features = features.loc[features.index.date <= date.fromisoformat(end)]
     result = run(symbol, strategy, params, features, net_of_costs=net_of_costs)  # type: ignore[arg-type]
+    result.trust = validate_strategy(symbol, strategy, features, net_of_costs)  # type: ignore[arg-type]
     return result.model_dump(mode="json")
 
 
