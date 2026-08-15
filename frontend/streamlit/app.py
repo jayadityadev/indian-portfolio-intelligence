@@ -33,8 +33,11 @@ def api_get(path: str) -> Any:
     response = httpx.get(f"{API_URL}{path}", timeout=30)
     response.raise_for_status()
     body = response.json()
+    if body.get("job_id") and body.get("status"):
+        return body
     if not body.get("ok", False):
-        raise ApiError(body.get("error", {}).get("message", "API request failed"))
+        error = body.get("error") or {}
+        raise ApiError(error.get("message", "API request failed"))
     return body["data"]
 
 
@@ -42,8 +45,11 @@ def api_post(path: str, payload: dict[str, Any]) -> Any:
     response = httpx.post(f"{API_URL}{path}", json=payload, timeout=30)
     response.raise_for_status()
     body = response.json()
+    if body.get("job_id") and body.get("status"):
+        return body
     if not body.get("ok", False):
-        raise ApiError(body.get("error", {}).get("message", "API request failed"))
+        error = body.get("error") or {}
+        raise ApiError(error.get("message", "API request failed"))
     return body["data"]
 
 
