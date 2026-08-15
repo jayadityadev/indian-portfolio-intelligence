@@ -4,6 +4,8 @@ set -Eeuo pipefail
 # Local-first Iteration-1 demo launcher.
 # Docker is used only for Postgres and Redis; API, worker, seed, and Streamlit
 # run from the local uv environment for fast development cycles.
+#
+# Default host ports (5433, 6380) avoid conflicts with other local services.
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT_DIR"
@@ -11,6 +13,8 @@ cd "$ROOT_DIR"
 API_HOST="${API_HOST:-127.0.0.1}"
 API_PORT="${API_PORT:-8888}"
 FRONTEND_PORT="${FRONTEND_PORT:-8501}"
+PG_HOST_PORT="${PG_HOST_PORT:-5433}"
+REDIS_HOST_PORT="${REDIS_HOST_PORT:-6380}"
 SEED_YEARS="${SEED_YEARS:-2}"
 SEED_SYMBOLS="${SEED_SYMBOLS:-^NSEI RELIANCE.NS}"
 FULL_SEED="${FULL_SEED:-0}"
@@ -23,10 +27,24 @@ if [[ ! -f .env ]]; then
     cp .env.example .env
 fi
 
-export POSTGRES_DSN="${POSTGRES_DSN:-postgresql://ipu:ipu@localhost:5432/ipu}"
-export REDIS_URL="${REDIS_URL:-redis://localhost:6379/0}"
+export POSTGRES_DSN="${POSTGRES_DSN:-postgresql://ipu:ipu@localhost:${PG_HOST_PORT}/ipu}"
+export REDIS_URL="${REDIS_URL:-redis://localhost:${REDIS_HOST_PORT}/0}"
 export PARQUET_DIR="${PARQUET_DIR:-$ROOT_DIR/data/parquet}"
 export API_URL="${API_URL:-http://localhost:${API_PORT}}"
+
+# Inline compose override so Docker host ports never conflict with other apps.
+OVERRIDE_FILE="$LOG_DIR/ports-override.yml"
+cat > "$OVERRIDE_FILE" <<EOF
+services:
+  postgres:
+    ports: !override
+      - "${PG_HOST_PORT}:5432"
+  redis:
+    ports: !override
+      - "${REDIS_HOST_PORT}:6379"
+EOF
+
+COMPOSE=(docker compose -f docker-compose.yml -f "$OVERRIDE_FILE")
 
 api_pid=""
 worker_pid=""
@@ -37,7 +55,7 @@ cleanup() {
     [[ -n "$worker_pid" ]] && kill "$worker_pid" 2>/dev/null || true
     [[ -n "$api_pid" ]] && kill "$api_pid" 2>/dev/null || true
     if [[ "$STOP_INFRA_ON_EXIT" == "1" ]]; then
-        docker compose stop postgres redis >/dev/null 2>&1 || true
+        "${COMPOSE[@]}" stop postgres redis >/dev/null 2>&1 || true
     fi
     echo "Demo stopped. Logs: $LOG_DIR"
     exit "$exit_code"
@@ -58,10 +76,10 @@ wait_for() {
     return 1
 }
 
-echo "Starting Postgres and Redis..."
-docker compose up -d postgres redis >/dev/null
-wait_for "Postgres" 'docker compose exec -T postgres pg_isready -U ipu -d ipu'
-wait_for "Redis" 'docker compose exec -T redis redis-cli ping'
+echo "Starting Postgres (host:${PG_HOST_PORT}) and Redis (host:${REDIS_HOST_PORT})..."
+"${COMPOSE[@]}" up -d postgres redis >/dev/null
+wait_for "Postgres" '"${COMPOSE[@]}" exec -T postgres pg_isready -U ipu -d ipu'
+wait_for "Redis" '"${COMPOSE[@]}" exec -T redis redis-cli ping'
 
 echo "Starting API on http://${API_HOST}:${API_PORT}..."
 uv run uvicorn app.api.main:app --host "$API_HOST" --port "$API_PORT" \
