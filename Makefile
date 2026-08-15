@@ -18,15 +18,15 @@ ps:
 
 # Seed the parquet cache with the NIFTY-50 universe (needs worker stack up)
 seed:
-	docker compose run --rm worker python -m scripts.seed_universe
+	docker compose run --rm worker uv run python -m scripts.seed_universe
 
 # Daily incremental sync (append new trading days)
 sync:
-	docker compose run --rm worker python -m scripts.sync_daily
+	docker compose run --rm worker uv run python -m scripts.sync_daily
 
 # Cross-source data integrity check
 validate-data:
-	docker compose run --rm worker python -m scripts.validate_data
+	docker compose run --rm worker uv run python -m scripts.validate_data
 
 # Test / quality
 test:

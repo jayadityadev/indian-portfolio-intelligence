@@ -717,9 +717,9 @@ Goal: **a working end-to-end demo** (symbol → backtest → regime overlay → 
 - **Integration:** consumes only API JSON; reads strategy registry keys from `/market` or a shared constant — no hardcoded drift.
 
 ### T9 — Demo + hardening (all)
-- [ ] Write `docs/DEMO_SCRIPT.md` (see §23) and rehearse.
-- [ ] Clean up: error messages, empty states, job failure handling.
-- [ ] Tag `v1.0.0`. Screenshot every screen for the report.
+- [x] Write `docs/DEMO_SCRIPT.md` (see §23) and rehearse.
+- [x] Clean up: error messages, empty states, job failure handling.
+- [x] Tag `v1.0.0`. Screenshot every screen for the report.
 - **Iteration 1 Done when:** demo runs from a fresh `git clone` + `make dev` + `make seed` on any laptop.
 
 ---

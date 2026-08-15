@@ -4,7 +4,9 @@ Thin orchestration layer only. Routers call services and return ``app.schemas``
 shapes. Long-running work is enqueued to Celery and polled via JobStatus.
 """
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.responses import JSONResponse
 
 from app.api import backtest, jobs, market, recommend, regime, report, risk
 from app.config import settings
@@ -16,6 +18,29 @@ app = FastAPI(
     description="Regime-aware, risk-adjusted, overfitting-controlled strategy "
     "evaluation for Indian equities.",
 )
+
+
+@app.exception_handler(HTTPException)
+async def http_error(request: Request, exc: HTTPException) -> JSONResponse:
+    del request
+    detail = exc.detail if isinstance(exc.detail, str) else "request failed"
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"ok": False, "data": None, "error": {"code": "http_error", "message": detail}},
+    )
+
+
+@app.exception_handler(RequestValidationError)
+async def validation_error(request: Request, exc: RequestValidationError) -> JSONResponse:
+    del request
+    return JSONResponse(
+        status_code=422,
+        content={
+            "ok": False,
+            "data": None,
+            "error": {"code": "validation_error", "message": str(exc.errors())},
+        },
+    )
 
 
 @app.get("/health", response_model=HealthResponse, tags=["system"])

@@ -8,7 +8,7 @@ RUN pip install --no-cache-dir uv
 
 WORKDIR /code
 
-COPY pyproject.toml uv.lock .python-version ./
+COPY pyproject.toml uv.lock .python-version README.md ./
 RUN uv sync --frozen --no-dev --extra dev
 
 COPY app ./app
