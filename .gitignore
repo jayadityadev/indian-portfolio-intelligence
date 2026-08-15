@@ -21,7 +21,7 @@ uv.lock.gh
 !.env.example
 
 # Data cache (large, reproducible via `make seed`)
-data/
+/data/
 mlruns/
 
 # Node / frontend

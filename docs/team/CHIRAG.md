@@ -39,20 +39,20 @@ reimplement data fetching inside `scripts/`.
 ## Iteration 1 tasks
 
 ### 1. Seed (`scripts/seed_universe.py`)
-- [ ] Iterate `nifty50_symbols()` + `nifty50_index()`, call `fetch(...)` for ~20
+- [x] Iterate `nifty50_symbols()` + `nifty50_index()`, call `fetch(...)` for ~20
       years, `store(...)` each, print a progress summary.
-- [ ] Populate Postgres `symbols` (symbol, name, exchange, index_member, isin,
-      sector) — sector from nsepython index constituents.
+- [x] Populate Postgres `symbols` (symbol, name, exchange, index_member, isin,
+      sector) — sector from a curated static map (`app/data/metadata.py`).
 - **Acceptance:** `make seed` completes with zero source errors; manifest hashes
   consistent; ≥20 symbols valid; every symbol `adjusted=True`.
 
 ### 2. Daily sync (`scripts/sync_daily.py`)
-- [ ] For each symbol, `latest_date(...)` then `fetch` only newer rows and append.
-- [ ] Idempotent — safe to re-run; no duplicate rows.
+- [x] For each symbol, `latest_date(...)` then `fetch` only newer rows and append.
+- [x] Idempotent — safe to re-run; no duplicate rows.
 - **Acceptance:** re-running same day changes nothing.
 
 ### 3. Validate (`scripts/validate_data.py`)
-- [ ] Run `validate_adjustment(...)` over the universe; spot-check a sample vs
+- [x] Run `validate_adjustment(...)` over the universe; spot-check a sample vs
       Twelve Data if `TWELVEDATA_API_KEY` is set; fail loudly on anomalies.
 - **Acceptance:** passes for ≥20 symbols; flags any unadjusted series.
 

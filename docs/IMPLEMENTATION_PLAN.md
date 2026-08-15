@@ -671,9 +671,9 @@ Goal: **a working end-to-end demo** (symbol → backtest → regime overlay → 
 - **Done when:** `make dev` boots all 5 containers; `/health` returns `{ok:true}`; parquet cache for 5 symbols exists with manifest.
 
 ### T1 — Data layer (Chirag)
-- [ ] Implement `scripts/seed_universe.py` for full NIFTY-50 + `^NSEI` using `data/sources.py` (yfinance primary, nsepython fallback).
-- [ ] Implement `scripts/sync_daily.py` (incremental append + manifest update) and `scripts/validate_data.py` (Twelve Data spot-check, optional).
-- [ ] Populate Postgres `symbols` table (name, sector, index_member, isin).
+- [x] Implement `scripts/seed_universe.py` for full NIFTY-50 + `^NSEI` using `data/sources.py` (yfinance primary, nsepython fallback).
+- [x] Implement `scripts/sync_daily.py` (incremental append + manifest update) and `scripts/validate_data.py` (Twelve Data spot-check, optional).
+- [x] Populate Postgres `symbols` table (name, sector, index_member, isin).
 - **Acceptance:** `make seed` completes with zero source errors; manifest hashes consistent; `validate_data` passes for ≥20 symbols. 100% adjusted (`adjusted=True`).
 - **Integration:** must consume and return `MarketData` (§10.1); never import other modules. Commit under `feat/data/...`.
 
