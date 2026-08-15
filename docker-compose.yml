@@ -9,7 +9,7 @@ services:
       - REDIS_URL=redis://redis:6379/0
       - PARQUET_DIR=/data/parquet
     ports:
-      - "8000:8000"
+      - "8888:8000"
     volumes:
       - parquet:/data/parquet
     depends_on:

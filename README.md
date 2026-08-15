@@ -29,7 +29,17 @@ make seed                        # (worker stack) backfill NIFTY-50 parquet cach
 ```
 
 Then open the Streamlit dashboard at http://localhost:8501 and the API docs at
-http://localhost:8000/docs.
+http://localhost:8888/docs.
+
+For faster development without rebuilding application containers, run only
+required infrastructure and start app processes locally:
+
+```bash
+make infra       # Postgres + Redis only
+make api         # FastAPI at http://localhost:8888
+make worker      # Celery worker, separate terminal
+make frontend    # Streamlit at http://localhost:8501
+```
 
 ## Modules
 

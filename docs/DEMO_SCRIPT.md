@@ -14,9 +14,9 @@ make dev
 
 Verify:
 
-- API docs: `http://localhost:8000/docs`
+- API docs: `http://localhost:8888/docs`
 - Streamlit: `http://localhost:8501`
-- Health: `curl http://localhost:8000/health`
+- Health: `curl http://localhost:8888/health`
 
 In a second terminal, build the parquet cache:
 

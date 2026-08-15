@@ -1,8 +1,21 @@
-.PHONY: dev seed test lint typecheck sync down up logs ps clean
+.PHONY: dev infra api worker frontend seed test lint typecheck sync down up logs ps clean
 
 # Boot all containers locally (api + worker + redis + postgres + frontend)
 dev:
 	docker compose up --build
+
+# Local development: keep Postgres and Redis in Docker, run app processes locally.
+infra:
+	docker compose up -d postgres redis
+
+api:
+	POSTGRES_DSN=postgresql://ipu:ipu@localhost:5432/ipu REDIS_URL=redis://localhost:6379/0 uv run uvicorn app.api.main:app --host 0.0.0.0 --port 8888
+
+worker:
+	REDIS_URL=redis://localhost:6379/0 uv run celery -A app.worker:celery_app worker --loglevel=info
+
+frontend:
+	API_URL=http://localhost:8888 uv run streamlit run frontend/streamlit/app.py --server.port 8501
 
 up:
 	docker compose up -d

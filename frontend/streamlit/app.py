@@ -10,7 +10,7 @@ import httpx
 import plotly.io as pio
 import streamlit as st
 
-API_URL = os.environ.get("API_URL", "http://localhost:8000").rstrip("/")
+API_URL = os.environ.get("API_URL", "http://localhost:8888").rstrip("/")
 
 st.set_page_config(page_title="Portfolio Intelligence", layout="wide")
 
